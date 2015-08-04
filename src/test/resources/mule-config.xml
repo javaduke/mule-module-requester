@@ -13,34 +13,36 @@
         http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
         http://www.mulesoft.org/schema/mule/mulerequester http://www.mulesoft.org/schema/mule/mulerequester/1.0-SNAPSHOT/mule-mulerequester.xsd">
     
+    <mulerequester:config name="Mule_Requester"/>
+    
     <flow name="testDefaultRequest">
-        <mulerequester:request resource="vm://in" />
+        <mulerequester:request resource="vm://in" config-ref="Mule_Requester" />
     </flow>
 
     <flow name="testDefaultTimeout">
-        <mulerequester:request resource="vm://delay" />
+        <mulerequester:request resource="vm://delay" config-ref="Mule_Requester"/>
     </flow>
 
     <flow name="testCustomTimeout">
-        <mulerequester:request resource="vm://delay" timeout="2000" />
+        <mulerequester:request resource="vm://delay" timeout="2000" config-ref="Mule_Requester"/>
     </flow>
 
     <flow name="testTransformer">
-        <mulerequester:request resource="vm://in" returnClass="java.lang.String" />
+        <mulerequester:request resource="vm://in" returnClass="java.lang.String" config-ref="Mule_Requester"/>
     </flow>
 
     <flow name="testResourceFromPayload">
         <set-payload value="vm://testpayload" />
-        <mulerequester:request resource="#[payload]" />
+        <mulerequester:request resource="#[payload]" config-ref="Mule_Requester"/>
     </flow>
 
     <flow name="testResourceFromProperties">
         <set-variable variableName="myresource" value="vm://testproperties" />
-        <mulerequester:request resource="#[flowVars['myresource']]" />
+        <mulerequester:request resource="#[flowVars['myresource']]" config-ref="Mule_Requester"/>
     </flow>
     
     <flow name="testThrowExceptionOnTimeout">
-        <mulerequester:request resource="vm://timeout" timeout="1000" throwExceptionOnTimeout="true" />
+        <mulerequester:request resource="vm://timeout" timeout="1000" throwExceptionOnTimeout="true" config-ref="Mule_Requester"/>
     </flow>
     
 </mule>

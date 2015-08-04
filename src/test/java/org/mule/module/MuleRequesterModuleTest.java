@@ -79,6 +79,7 @@ public class MuleRequesterModuleTest extends FunctionalTestCase
     }
 
     @SuppressWarnings("unused")
+    @Test
     public void testThrowExceptionOnError() throws Exception
     {
         Flow flow = lookupFlowConstruct("testThrowExceptionOnTimeout");

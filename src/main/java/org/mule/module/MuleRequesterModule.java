@@ -3,8 +3,6 @@
  */
 package org.mule.module;
 
-import javax.inject.Inject;
-
 import org.mule.DefaultMessageCollection;
 import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleContext;
@@ -20,6 +18,7 @@ import org.mule.api.annotations.param.Optional;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.transformer.Transformer;
 import org.mule.transformer.types.DataTypeFactory;
+import org.mule.transport.NullPayload;
 
 /**
  * Generic module
@@ -57,7 +56,7 @@ public class MuleRequesterModule implements MuleContextAware {
      * @throws MuleException Some exception
      */
     @Processor
-    public Object request(String resource, @Optional @Default("1000") long timeout, @Optional String returnClass, @Optional Boolean throwExceptionOnTimeout) throws MuleException {
+    public void request(MuleEvent muleEvent, String resource, @Optional @Default("1000") long timeout, @Optional String returnClass, @Optional Boolean throwExceptionOnTimeout) throws MuleException {
         MuleMessage message = muleContext.getClient().request(resource, timeout);
         Object result = null;
         if (message != null)
@@ -73,11 +72,16 @@ public class MuleRequesterModule implements MuleContextAware {
                 }
             }
             message.setPayload(result);
-        } else if (Boolean.TRUE.equals(throwExceptionOnTimeout))
+            muleEvent.setMessage(message);
+        } 
+        else if (Boolean.TRUE.equals(throwExceptionOnTimeout))
         {
             throw new DefaultMuleException("No message received in the configured timeout - " + timeout);
         }
-        return message;
+        else
+        {
+            muleEvent.getMessage().setPayload(NullPayload.getInstance());
+        }
     }
     
     /**
@@ -102,7 +106,6 @@ public class MuleRequesterModule implements MuleContextAware {
      * @throws MuleException Some exception
      */
     @Processor
-    @Inject
     public void requestCollection(MuleEvent muleEvent, String resource, @Optional @Default("1000") long timeout, @Optional String returnClass,
     		@Optional Boolean throwExceptionOnTimeout, @Optional @Default("-1") int count) throws MuleException 
     {
