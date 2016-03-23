@@ -4,6 +4,7 @@
 package org.mule.module;
 
 import org.mule.DefaultMessageCollection;
+import org.mule.DefaultMuleMessage;
 import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEvent;
@@ -57,11 +58,12 @@ public class MuleRequesterModule implements MuleContextAware {
      */
     @Processor
     public void request(MuleEvent muleEvent, String resource, @Optional @Default("1000") long timeout, @Optional String returnClass, @Optional Boolean throwExceptionOnTimeout) throws MuleException {
-        MuleMessage message = muleContext.getClient().request(resource, timeout);
+        MuleMessage originalMessage = muleContext.getClient().request(resource, timeout);
         Object result = null;
-        if (message != null)
+        if (originalMessage != null)
         {
-            result = message.getPayload();
+            MuleMessage newMessage = new DefaultMuleMessage(originalMessage);
+            result = newMessage.getPayload();
             if (returnClass != null) 
             {
                 try {
@@ -71,8 +73,8 @@ public class MuleRequesterModule implements MuleContextAware {
                     throw new DefaultMuleException(e);
                 }
             }
-            message.setPayload(result);
-            muleEvent.setMessage(message);
+            newMessage.setPayload(result);
+            muleEvent.setMessage(newMessage);
         } 
         else if (Boolean.TRUE.equals(throwExceptionOnTimeout))
         {
