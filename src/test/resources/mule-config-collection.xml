@@ -11,58 +11,58 @@
         http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
         http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
-        http://www.mulesoft.org/schema/mule/mulerequester http://www.mulesoft.org/schema/mule/mulerequester/1.0-SNAPSHOT/mule-mulerequester.xsd">
+        http://www.mulesoft.org/schema/mule/mulerequester http://www.mulesoft.org/schema/mule/mulerequester/current/mule-mulerequester.xsd">
     
-    <mulerequester:config name="Mule_Requester"/>
+    <!-- <mulerequester:config name="Mule_Requester"/> -->
     
     <flow name="testDefaultRequest">
-        <mulerequester:request-collection resource="vm://in" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://in" />
     </flow>
 
     <flow name="testRequestAll">
-        <mulerequester:request-collection resource="vm://all" count="-1" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://all" count="-1" />
     </flow>
 
     <flow name="testRequestN">
-        <mulerequester:request-collection resource="vm://n" count="2" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://n" count="2" />
     </flow>
 
     <flow name="testDefaultTimeoutForAll">
-        <mulerequester:request-collection resource="vm://delay" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://delay" />
     </flow>
 
     <flow name="testDefaultTimeoutForOne">
-        <mulerequester:request-collection resource="vm://delayOne" count="1" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://delayOne" count="1" />
     </flow>
 
     <flow name="testDefaultTimeoutForN">
-        <mulerequester:request-collection resource="vm://delayN" count="3" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://delayN" count="3" />
     </flow>
 
     <flow name="testCustomTimeoutForAll">
-        <mulerequester:request-collection resource="vm://delayAll" timeout="2000" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://delayAll" timeout="2000" />
     </flow>
 
     <flow name="testTransformer">
-        <mulerequester:request-collection resource="vm://in" returnClass="java.lang.String" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://in" returnClass="java.lang.String" />
     </flow>
 
     <flow name="testResourceFromPayload">
         <set-payload value="vm://testpayload" />
-        <mulerequester:request-collection resource="#[payload]" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="#[payload]" />
     </flow>
 
     <flow name="testResourceFromProperties">
         <set-variable variableName="myresource" value="vm://testproperties" />
-        <mulerequester:request-collection resource="#[flowVars['myresource']]" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="#[flowVars['myresource']]" />
     </flow>
     
     <flow name="testThrowExceptionOnTimeout">
-        <mulerequester:request-collection resource="vm://timeout" timeout="1000" throwExceptionOnTimeout="true" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://timeout" timeout="1000" throwExceptionOnTimeout="true" />
     </flow>
 
     <flow name="testPropertyPreservedForN">
-        <mulerequester:request-collection resource="vm://testPropertyPreservedForN" count="3" config-ref="Mule_Requester"/>
+        <mulerequester:request-collection resource="vm://testPropertyPreservedForN" count="3" />
     </flow>
 
 </mule>
