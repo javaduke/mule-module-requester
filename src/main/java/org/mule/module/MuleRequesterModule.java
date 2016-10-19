@@ -46,7 +46,6 @@ public class MuleRequesterModule {
      * To make the request using the address, use the format "protocol://address". E.g.: "file://path/to/file". <br>
      * Otherwise, you can use a global endpoint name. E.g.: "fileEndpoint". <br>
      * 
-     * {@sample.xml ../../../doc/MuleRequester-connector.xml.sample
      * mulerequester:request}
      * 
      * @param resource
@@ -95,7 +94,6 @@ public class MuleRequesterModule {
      * To make the request using the address, use the format "protocol://address". E.g.: "file://path/to/file". <br>
      * Otherwise, you can use a global endpoint name. E.g.: "fileEndpoint". <br>
      * 
-     * {@sample.xml ../../../doc/MuleRequester-connector.xml.sample
      * mulerequester:request}
      * 
      * @param resource
