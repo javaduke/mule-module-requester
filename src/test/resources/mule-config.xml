@@ -11,38 +11,38 @@
         http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
         http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
-        http://www.mulesoft.org/schema/mule/mulerequester http://www.mulesoft.org/schema/mule/mulerequester/1.0-SNAPSHOT/mule-mulerequester.xsd">
+        http://www.mulesoft.org/schema/mule/mulerequester http://www.mulesoft.org/schema/mule/mulerequester/current/mule-mulerequester.xsd">
     
-    <mulerequester:config name="Mule_Requester"/>
+    <!-- <mulerequester:config name="Mule_Requester"/> -->
     
     <flow name="testDefaultRequest">
-        <mulerequester:request resource="vm://in" config-ref="Mule_Requester" />
+        <mulerequester:request resource="vm://in"  />
     </flow>
 
     <flow name="testDefaultTimeout">
-        <mulerequester:request resource="vm://delay" config-ref="Mule_Requester"/>
+        <mulerequester:request resource="vm://delay" />
     </flow>
 
     <flow name="testCustomTimeout">
-        <mulerequester:request resource="vm://delay" timeout="2000" config-ref="Mule_Requester"/>
+        <mulerequester:request resource="vm://delay" timeout="2000" />
     </flow>
 
     <flow name="testTransformer">
-        <mulerequester:request resource="vm://in" returnClass="java.lang.String" config-ref="Mule_Requester"/>
+        <mulerequester:request resource="vm://in" returnClass="java.lang.String" />
     </flow>
 
     <flow name="testResourceFromPayload">
         <set-payload value="vm://testpayload" />
-        <mulerequester:request resource="#[payload]" config-ref="Mule_Requester"/>
+        <mulerequester:request resource="#[payload]" />
     </flow>
 
     <flow name="testResourceFromProperties">
         <set-variable variableName="myresource" value="vm://testproperties" />
-        <mulerequester:request resource="#[flowVars['myresource']]" config-ref="Mule_Requester"/>
+        <mulerequester:request resource="#[flowVars['myresource']]" />
     </flow>
     
     <flow name="testThrowExceptionOnTimeout">
-        <mulerequester:request resource="vm://timeout" timeout="1000" throwExceptionOnTimeout="true" config-ref="Mule_Requester"/>
+        <mulerequester:request resource="vm://timeout" timeout="1000" throwExceptionOnTimeout="true" />
     </flow>
     
 </mule>

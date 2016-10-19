@@ -21,6 +21,7 @@ import org.mule.api.transformer.Transformer;
 import org.mule.transformer.types.DataTypeFactory;
 import org.mule.transport.NullPayload;
 
+import javax.inject.Inject;
 /**
  * Generic module
  * 
@@ -28,21 +29,24 @@ import org.mule.transport.NullPayload;
  */
 @Module(name = "mulerequester", schemaVersion = "1.0-SNAPSHOT", friendlyName = "Mule Requester")
 @Category(name = "org.mule.tooling.category.core", description = "Components") 
-public class MuleRequesterModule implements MuleContextAware {
+public class MuleRequesterModule {
     
+    @Inject
     private MuleContext muleContext;
 
     public void setMuleContext(MuleContext muleContext)
     {
           this.muleContext = muleContext;
     }
-
+    public MuleContext getMuleContext()
+    {
+         return muleContext;
+    }
     /**
      * Request a resource from an address or endpoint. <br>
      * To make the request using the address, use the format "protocol://address". E.g.: "file://path/to/file". <br>
      * Otherwise, you can use a global endpoint name. E.g.: "fileEndpoint". <br>
      * 
-     * {@sample.xml ../../../doc/MuleRequester-connector.xml.sample
      * mulerequester:request}
      * 
      * @param resource
@@ -58,32 +62,32 @@ public class MuleRequesterModule implements MuleContextAware {
      */
     @Processor
     public void request(MuleEvent muleEvent, String resource, @Optional @Default("1000") long timeout, @Optional String returnClass, @Optional Boolean throwExceptionOnTimeout) throws MuleException {
-        MuleMessage originalMessage = muleContext.getClient().request(resource, timeout);
-        Object result = null;
-        if (originalMessage != null)
-        {
-            MuleMessage newMessage = new DefaultMuleMessage(originalMessage);
-            result = newMessage.getPayload();
-            if (returnClass != null) 
-            {
-                try {
-                    Transformer transformer = muleContext.getRegistry().lookupTransformer(DataTypeFactory.create(result.getClass()), DataTypeFactory.create(Class.forName(returnClass)));
-                    result = transformer.transform(result);
-                } catch (ClassNotFoundException e) {
-                    throw new DefaultMuleException(e);
-                }
-            }
-            newMessage.setPayload(result);
-            muleEvent.setMessage(newMessage);
-        } 
-        else if (Boolean.TRUE.equals(throwExceptionOnTimeout))
-        {
-            throw new DefaultMuleException("No message received in the configured timeout - " + timeout);
-        }
-        else
-        {
-            muleEvent.getMessage().setPayload(NullPayload.getInstance());
-        }
+              MuleMessage message = muleContext.getClient().request(resource, timeout);
+
+              Object result = null;
+              if (message != null)
+              {
+                  result = message.getPayload();
+                  if (returnClass != null) 
+                  {
+                      try {
+                          Transformer transformer = muleContext.getRegistry().lookupTransformer(DataTypeFactory.create(result.getClass()), DataTypeFactory.create(Class.forName(returnClass)));
+                          result = transformer.transform(result);
+                      } catch (ClassNotFoundException e) {
+                          throw new DefaultMuleException(e);
+                      }
+                  }
+                  message.setPayload(result);
+                  muleEvent.setMessage(message);
+              } 
+              else if (Boolean.TRUE.equals(throwExceptionOnTimeout))
+              {
+                  throw new DefaultMuleException("No message received in the configured timeout - " + timeout);
+              }
+              else
+              {
+                  muleEvent.getMessage().setPayload(NullPayload.getInstance());
+              }
     }
     
     /**
@@ -91,7 +95,6 @@ public class MuleRequesterModule implements MuleContextAware {
      * To make the request using the address, use the format "protocol://address". E.g.: "file://path/to/file". <br>
      * Otherwise, you can use a global endpoint name. E.g.: "fileEndpoint". <br>
      * 
-     * {@sample.xml ../../../doc/MuleRequester-connector.xml.sample
      * mulerequester:request}
      * 
      * @param resource

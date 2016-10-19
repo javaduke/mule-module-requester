@@ -19,7 +19,10 @@ Usage
 
 Request a resource from an address or endpoint. 
 To make the request using the address, use the format "protocol://address". E.g.: "file://path/to/file". 
-Otherwise, you can use a global endpoint name. E.g.: "fileEndpoint". 
+Otherwise, you can use a global endpoint name. E.g.: "fileEndpoint".
+
+If you have more than one connector in your configuration you will need to link the resource request to it. This can be done by appending '?connector=<CONNECTOR NAME>' at the end of the URL for the resource. More info at:
+https://docs.mulesoft.com/mule-user-guide/v/3.7/mule-endpoint-uris
 
 Parameters:
 - resource The address of the resource or the global endpoint name
@@ -40,6 +43,9 @@ Request a collection of resources from an address or endpoint.
 To make the request using the address, use the format "protocol://address". E.g.: "file://path/to/file". 
 Otherwise, you can use a global endpoint name. E.g.: "fileEndpoint". 
 
+If you have more than one connector in your configuration you will need to link the resource request to it. This can be done by appending '?connector=<CONNECTOR NAME>' at the end of the URL for the resource. More info at:
+https://docs.mulesoft.com/mule-user-guide/v/3.7/mule-endpoint-uris
+
 Parameters:
 - resource The address of the resource or the global endpoint name
 - timeout The timeout to wait for when requesting the resource (optional - default 1000 ms)
@@ -50,33 +56,12 @@ Parameters:
 Returns:
 - A MuleMessageCollection with the requested resources as part of MuleMessages
 
-
-TESTING
-=======
-
-This  project also contains test classes that can be run as part of a test
-suite.
-
-ADDITIONAL RESOURCES
-====================
-Everything you need to know about getting started with Mule can be found here:
-http://www.mulesoft.org/documentation/display/MULE3INTRO/Home
-
-There further useful information about extending Mule here:
-http://www.mulesoft.org/documentation/display/DEVKIT/Home
-
-Remember if you get stuck you can try getting help on the Mule user list:
-http://www.mulesoft.org/email-lists
-
-Also, MuleSoft, the company behind Mule, offers 24x7 support options:
-http://www.mulesoft.com/enterprise-subscriptions-and-support
-
 INSTALLATION
 ============
 For MuleStudio
 --------------
 1. Download the update site zip file from the following location:
-https://repository-master.mulesoft.org/nexus/content/repositories/releases/org/mule/modules/mule-module-requester/1.2/mule-module-requester-1.2-studio-plugin.zip
+https://repository-master.mulesoft.org/nexus/content/repositories/releases/org/mule/modules/mule-module-requester/1.3/mule-module-requester-1.3-studio-plugin.zip
 2. Install it in MuleStudio as a regular update site from a file. The module will appear under the Components tab.
 
 For Maven
@@ -85,7 +70,7 @@ For Maven
 <dependency>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-module-requester</artifactId>
-    <version>1.2</version>        
+    <version>1.3</version>        
 </dependency>
 ```  
 
@@ -109,6 +94,25 @@ Modify (or include if you don't have it) your configuration for maven-mule-plugi
 </plugin>
 ```
 
-Enjoy your Mule ride!
+TECHNICAL DETAILS
+=================
+Overview
+--------
+The Mule Requester is an abstraction on top of the actual transport (JMS, File, etc.), which provides the following extra functionality:
+- Reusability 
+- Transformation
+- Timeout
+The module relies on a call to MuleClient.request() which in turn delegates on each of the transport's requester classes.
+ 
+Limitations
+-----------
+- It's responsibility of each underlying transport how resources are retrieved and if it has any logic in place to delete/move/copy the requested resource. To analyze this you need to check the actual requester for the transport, which is usually <transport name>MessageRequester, e.g.: FileMessageRequester.
+- The same applies for timeouts: if the underlying requester of the transport doesn't use them, then the Mule Requester won't use them either, as expected.
+- Filters and any transport specific configuration fall under the same considerations.
+- It's also important to highlight that some attributes that are configured at the endpoint or connector level may be used by the MessageReceiver of the transport, but ignored or not used in the MessageRequester of the same module. This can be established by looking at the source code of the latter.
+- The request-collection operation makes use of sequential calls to the specified resource, so if the underlying transport doesn't delete it, the same resource will be requested again. This can be prevented by (provided the underlying transport allows it):
+a. Setting a transformer in the operation so the resource is consumed
+b. Setting the auto delete flag of the transport to true
+This way the resource will be consumed, transformed and deleted. Otherwise this operation will fall into an infinite loop, requesting always the same resource. 
 
-The Mule Team
+
