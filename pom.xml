@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-module-requester</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
     <packaging>mule-module</packaging>
     <name>MuleSoft Module Requester</name>
 
@@ -160,7 +160,7 @@
         <connection>scm:git:git@github.com:mulesoft/mule-requester-module.git</connection>
         <developerConnection>scm:git:git@github.com:mulesoft/mule-requester-module.git</developerConnection>
         <url>http://github.com/mulesoft/mule-requester-module</url>
-        <tag>HEAD</tag>
+        <tag>mule-module-requester-1.5</tag>
     </scm>
     <organization>
         <url>http://mulesoft.com</url>
